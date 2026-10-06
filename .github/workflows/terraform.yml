@@ -1,6 +1,8 @@
 name: Terraform Azure Infrastructure
 
 on:
+  workflow_dispatch:
+
   pull_request:
     paths:
       - "environments/**"
@@ -14,6 +16,10 @@ on:
       - "environments/**"
       - "modules/**"
       - ".github/workflows/**"
+
+concurrency:
+  group: terraform-${{ github.ref }}
+  cancel-in-progress: false
 
 permissions:
   id-token: write
@@ -155,5 +161,11 @@ jobs:
       - name: Terraform Init
         run: terraform init
 
+      - name: Download Terraform Plan
+        uses: actions/download-artifact@v4
+        with:
+          name: terraform-plan
+          path: ${{ env.TF_WORKING_DIR }}
+
       - name: Terraform Apply
-        run: terraform apply -auto-approve
+        run: terraform apply -auto-approve tfplan
