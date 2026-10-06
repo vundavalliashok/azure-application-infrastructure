@@ -41,3 +41,20 @@ variable "db_subnet_address_prefix" {
 variable "tags" {
   type = map(string)
 }
+variable "vm_size" {
+  description = "Azure VM size"
+  type        = string
+  default     = "Standard_B2s"
+}
+
+variable "admin_username" {
+  description = "Linux VM administrator username"
+  type        = string
+  default     = "azureadmin"
+}
+
+variable "ssh_public_key" {
+  description = "SSH public key used to access the VMs"
+  type        = string
+  sensitive   = true
+}
