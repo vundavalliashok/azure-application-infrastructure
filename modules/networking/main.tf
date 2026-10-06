@@ -1,0 +1,116 @@
+resource "azurerm_virtual_network" "this" {
+  name                = var.vnet_name
+  location            = var.location
+  resource_group_name = var.resource_group_name
+  address_space       = [var.vnet_address_space]
+
+  tags = var.tags
+}
+
+resource "azurerm_subnet" "web" {
+  name                 = var.web_subnet_name
+  resource_group_name  = var.resource_group_name
+  virtual_network_name = azurerm_virtual_network.this.name
+  address_prefixes     = [var.web_subnet_address_prefix]
+}
+
+resource "azurerm_subnet" "app" {
+  name                 = var.app_subnet_name
+  resource_group_name  = var.resource_group_name
+  virtual_network_name = azurerm_virtual_network.this.name
+  address_prefixes     = [var.app_subnet_address_prefix]
+}
+
+resource "azurerm_subnet" "db" {
+  name                 = var.db_subnet_name
+  resource_group_name  = var.resource_group_name
+  virtual_network_name = azurerm_virtual_network.this.name
+  address_prefixes     = [var.db_subnet_address_prefix]
+}
+
+resource "azurerm_network_security_group" "web" {
+  name                = "${var.vnet_name}-web-nsg"
+  location            = var.location
+  resource_group_name = var.resource_group_name
+
+  security_rule {
+    name                       = "Allow-HTTP"
+    priority                   = 100
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "80"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+  }
+
+  security_rule {
+    name                       = "Allow-HTTPS"
+    priority                   = 110
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "443"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+  }
+
+  tags = var.tags
+}
+
+resource "azurerm_network_security_group" "app" {
+  name                = "${var.vnet_name}-app-nsg"
+  location            = var.location
+  resource_group_name = var.resource_group_name
+
+  security_rule {
+    name                       = "Allow-App-Traffic"
+    priority                   = 100
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "8080"
+    source_address_prefix     = var.web_subnet_address_prefix
+    destination_address_prefix = "*"
+  }
+
+  tags = var.tags
+}
+
+resource "azurerm_network_security_group" "db" {
+  name                = "${var.vnet_name}-db-nsg"
+  location            = var.location
+  resource_group_name = var.resource_group_name
+
+  security_rule {
+    name                       = "Allow-SQL"
+    priority                   = 100
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "1433"
+    source_address_prefix     = var.app_subnet_address_prefix
+    destination_address_prefix = "*"
+  }
+
+  tags = var.tags
+}
+
+resource "azurerm_subnet_network_security_group_association" "web" {
+  subnet_id                 = azurerm_subnet.web.id
+  network_security_group_id = azurerm_network_security_group.web.id
+}
+
+resource "azurerm_subnet_network_security_group_association" "app" {
+  subnet_id                 = azurerm_subnet.app.id
+  network_security_group_id = azurerm_network_security_group.app.id
+}
+
+resource "azurerm_subnet_network_security_group_association" "db" {
+  subnet_id                 = azurerm_subnet.db.id
+  network_security_group_id = azurerm_network_security_group.db.id
+}
