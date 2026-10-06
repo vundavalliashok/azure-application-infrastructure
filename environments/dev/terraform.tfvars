@@ -1,0 +1,29 @@
+resource_group_name = "rg-azure-app-dev"
+location            = "Central India"
+
+vnet_name          = "vnet-azure-app-dev"
+vnet_address_space = "10.10.0.0/16"
+
+web_subnet_name           = "snet-web"
+web_subnet_address_prefix = "10.10.1.0/24"
+
+app_subnet_name           = "snet-app"
+app_subnet_address_prefix = "10.10.2.0/24"
+
+db_subnet_name           = "snet-db"
+db_subnet_address_prefix = "10.10.3.0/24"
+
+tags = {
+  Environment = "Development"
+  Project     = "Azure-Application-Infrastructure"
+  ManagedBy   = "Terraform"
+  Owner       = "DevOps"
+}
+vm_size        = "Standard_B2s"
+admin_username = "azureadmin"
+
+ssh_public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAA................"
+
+key_vault_name = "kvazureappdev12345"
+
+storage_account_name = "stazureappdev12345"
