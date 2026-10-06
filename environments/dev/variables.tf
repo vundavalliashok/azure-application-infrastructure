@@ -58,3 +58,12 @@ variable "ssh_public_key" {
   type        = string
   sensitive   = true
 }
+variable "key_vault_name" {
+  description = "Key Vault name"
+  type        = string
+}
+
+variable "storage_account_name" {
+  description = "Storage account name"
+  type        = string
+}

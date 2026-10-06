@@ -13,6 +13,14 @@ app_subnet_address_prefix = "10.10.2.0/24"
 db_subnet_name           = "snet-db"
 db_subnet_address_prefix = "10.10.3.0/24"
 
+vm_size        = "Standard_B2s"
+admin_username = "azureadmin"
+
+ssh_public_key = "REPLACE_WITH_YOUR_SSH_PUBLIC_KEY"
+
+key_vault_name      = "REPLACE_WITH_UNIQUE_KEY_VAULT_NAME"
+storage_account_name = "REPLACE_WITH_UNIQUE_STORAGE_NAME"
+
 tags = {
   Environment = "Development"
   Project     = "Azure-Application-Infrastructure"
